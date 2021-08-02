@@ -1,0 +1,661 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="EstacionServicioModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Direccion">
+          <Key>
+            <PropertyRef Name="codPostal" />
+          </Key>
+          <Property Name="codPostal" Type="int" Nullable="false" />
+          <Property Name="calle" Type="varchar" MaxLength="100" />
+          <Property Name="nro" Type="int" />
+          <Property Name="adicional" Type="varchar" MaxLength="100" />
+          <Property Name="comuna" Type="varchar" MaxLength="50" />
+          <Property Name="region" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="EstacionServicio">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="capacidadMaxima" Type="int" />
+          <Property Name="tarifa" Type="varchar" MaxLength="10" />
+          <Property Name="count" Type="int" />
+          <Property Name="direccion" Type="int" />
+        </EntityType>
+        <EntityType Name="Horario">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="Dia" />
+            <PropertyRef Name="Inicio" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Dia" Type="int" Nullable="false" />
+          <Property Name="Inicio" Type="time" Precision="7" Nullable="false" />
+          <Property Name="Duracion" Type="time" Precision="7" />
+        </EntityType>
+        <EntityType Name="Lectura">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="fecha" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="fecha" Type="datetime" Nullable="false" />
+          <Property Name="valor" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="tipo" Type="int" Nullable="false" />
+          <Property Name="unidadMedida" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="estado" Type="int" />
+        </EntityType>
+        <EntityType Name="Medidor">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="fechaInstalacion" Type="date" Nullable="false" />
+          <Property Name="tipo" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MedidorConsumo">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MedidorTrafico">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PuntoCarga">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="capacidadMaxima" Type="int" />
+          <Property Name="fechaVencimiento" Type="date" />
+          <Property Name="estacionServicio" Type="int" />
+          <Property Name="medCons" Type="int" />
+          <Property Name="medTraf" Type="int" />
+          <Property Name="esDual" Type="bit" />
+        </EntityType>
+        <EntityType Name="Tarifa">
+          <Key>
+            <PropertyRef Name="codigo" />
+          </Key>
+          <Property Name="codigo" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="factorValle" Type="int" />
+          <Property Name="factorPunta" Type="int" />
+        </EntityType>
+        <Association Name="FK_EstacionServicio_ToDireccion">
+          <End Role="Direccion" Type="Self.Direccion" Multiplicity="0..1" />
+          <End Role="EstacionServicio" Type="Self.EstacionServicio" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Direccion">
+              <PropertyRef Name="codPostal" />
+            </Principal>
+            <Dependent Role="EstacionServicio">
+              <PropertyRef Name="direccion" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EstacionServicio_ToTarifa">
+          <End Role="Tarifa" Type="Self.Tarifa" Multiplicity="0..1" />
+          <End Role="EstacionServicio" Type="Self.EstacionServicio" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tarifa">
+              <PropertyRef Name="codigo" />
+            </Principal>
+            <Dependent Role="EstacionServicio">
+              <PropertyRef Name="tarifa" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Horario_ToEstacionServicio">
+          <End Role="EstacionServicio" Type="Self.EstacionServicio" Multiplicity="1" />
+          <End Role="Horario" Type="Self.Horario" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EstacionServicio">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Horario">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Lectura_Medidor">
+          <End Role="Medidor" Type="Self.Medidor" Multiplicity="1" />
+          <End Role="Lectura" Type="Self.Lectura" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Medidor">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Lectura">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MedidorConsumo_To Medidor">
+          <End Role="Medidor" Type="Self.Medidor" Multiplicity="1" />
+          <End Role="MedidorConsumo" Type="Self.MedidorConsumo" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Medidor">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="MedidorConsumo">
+              <PropertyRef Name="id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MedidorTrafico_ToMedidor">
+          <End Role="Medidor" Type="Self.Medidor" Multiplicity="1" />
+          <End Role="MedidorTrafico" Type="Self.MedidorTrafico" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Medidor">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="MedidorTrafico">
+              <PropertyRef Name="id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PuntoCarga_ToEstacionServicio">
+          <End Role="EstacionServicio" Type="Self.EstacionServicio" Multiplicity="0..1" />
+          <End Role="PuntoCarga" Type="Self.PuntoCarga" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EstacionServicio">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PuntoCarga">
+              <PropertyRef Name="estacionServicio" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PuntoCarga_ToMedidorConsumo">
+          <End Role="MedidorConsumo" Type="Self.MedidorConsumo" Multiplicity="0..1" />
+          <End Role="PuntoCarga" Type="Self.PuntoCarga" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MedidorConsumo">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PuntoCarga">
+              <PropertyRef Name="medCons" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PuntoCarga_ToMedidorTrafico">
+          <End Role="MedidorTrafico" Type="Self.MedidorTrafico" Multiplicity="0..1" />
+          <End Role="PuntoCarga" Type="Self.PuntoCarga" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MedidorTrafico">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PuntoCarga">
+              <PropertyRef Name="medTraf" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="EstacionServicioModelStoreContainer">
+          <EntitySet Name="Direccion" EntityType="Self.Direccion" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EstacionServicio" EntityType="Self.EstacionServicio" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Horario" EntityType="Self.Horario" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Lectura" EntityType="Self.Lectura" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Medidor" EntityType="Self.Medidor" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MedidorConsumo" EntityType="Self.MedidorConsumo" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MedidorTrafico" EntityType="Self.MedidorTrafico" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PuntoCarga" EntityType="Self.PuntoCarga" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tarifa" EntityType="Self.Tarifa" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_EstacionServicio_ToDireccion" Association="Self.FK_EstacionServicio_ToDireccion">
+            <End Role="Direccion" EntitySet="Direccion" />
+            <End Role="EstacionServicio" EntitySet="EstacionServicio" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EstacionServicio_ToTarifa" Association="Self.FK_EstacionServicio_ToTarifa">
+            <End Role="Tarifa" EntitySet="Tarifa" />
+            <End Role="EstacionServicio" EntitySet="EstacionServicio" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Horario_ToEstacionServicio" Association="Self.FK_Horario_ToEstacionServicio">
+            <End Role="EstacionServicio" EntitySet="EstacionServicio" />
+            <End Role="Horario" EntitySet="Horario" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Lectura_Medidor" Association="Self.FK_Lectura_Medidor">
+            <End Role="Medidor" EntitySet="Medidor" />
+            <End Role="Lectura" EntitySet="Lectura" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MedidorConsumo_To Medidor" Association="Self.FK_MedidorConsumo_To Medidor">
+            <End Role="Medidor" EntitySet="Medidor" />
+            <End Role="MedidorConsumo" EntitySet="MedidorConsumo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MedidorTrafico_ToMedidor" Association="Self.FK_MedidorTrafico_ToMedidor">
+            <End Role="Medidor" EntitySet="Medidor" />
+            <End Role="MedidorTrafico" EntitySet="MedidorTrafico" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PuntoCarga_ToEstacionServicio" Association="Self.FK_PuntoCarga_ToEstacionServicio">
+            <End Role="EstacionServicio" EntitySet="EstacionServicio" />
+            <End Role="PuntoCarga" EntitySet="PuntoCarga" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PuntoCarga_ToMedidorConsumo" Association="Self.FK_PuntoCarga_ToMedidorConsumo">
+            <End Role="MedidorConsumo" EntitySet="MedidorConsumo" />
+            <End Role="PuntoCarga" EntitySet="PuntoCarga" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PuntoCarga_ToMedidorTrafico" Association="Self.FK_PuntoCarga_ToMedidorTrafico">
+            <End Role="MedidorTrafico" EntitySet="MedidorTrafico" />
+            <End Role="PuntoCarga" EntitySet="PuntoCarga" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="EstacionServicioModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Direccion">
+          <Key>
+            <PropertyRef Name="codPostal" />
+          </Key>
+          <Property Name="codPostal" Type="Int32" Nullable="false" />
+          <Property Name="calle" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="nro" Type="Int32" />
+          <Property Name="adicional" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="comuna" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="region" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="EstacionServicio" Relationship="Self.FK_EstacionServicio_ToDireccion" FromRole="Direccion" ToRole="EstacionServicio" />
+        </EntityType>
+        <EntityType Name="EstacionServicio">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="capacidadMaxima" Type="Int32" />
+          <Property Name="tarifa" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="count" Type="Int32" />
+          <Property Name="direccion" Type="Int32" />
+          <NavigationProperty Name="Direccion1" Relationship="Self.FK_EstacionServicio_ToDireccion" FromRole="EstacionServicio" ToRole="Direccion" />
+          <NavigationProperty Name="Tarifa1" Relationship="Self.FK_EstacionServicio_ToTarifa" FromRole="EstacionServicio" ToRole="Tarifa" />
+          <NavigationProperty Name="PuntoCarga" Relationship="Self.FK_PuntoCarga_ToEstacionServicio" FromRole="EstacionServicio" ToRole="PuntoCarga" />
+          <NavigationProperty Name="Horario" Relationship="EstacionServicioModel.FK_Horario_ToEstacionServicio" FromRole="EstacionServicio" ToRole="Horario" />
+        </EntityType>
+        <EntityType Name="Lectura">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="fecha" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="fecha" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="valor" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="tipo" Type="Int32" Nullable="false" />
+          <Property Name="unidadMedida" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="estado" Type="Int32" />
+          <NavigationProperty Name="Medidor" Relationship="Self.FK_Lectura_Medidor" FromRole="Lectura" ToRole="Medidor" />
+        </EntityType>
+        <EntityType Name="Medidor">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="fechaInstalacion" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="tipo" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Lectura" Relationship="Self.FK_Lectura_Medidor" FromRole="Medidor" ToRole="Lectura" />
+          <NavigationProperty Name="MedidorConsumo" Relationship="Self.FK_MedidorConsumo_To_Medidor" FromRole="Medidor" ToRole="MedidorConsumo" />
+          <NavigationProperty Name="MedidorTrafico" Relationship="Self.FK_MedidorTrafico_ToMedidor" FromRole="Medidor" ToRole="MedidorTrafico" />
+        </EntityType>
+        <EntityType Name="MedidorConsumo">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Medidor" Relationship="Self.FK_MedidorConsumo_To_Medidor" FromRole="MedidorConsumo" ToRole="Medidor" />
+          <NavigationProperty Name="PuntoCarga" Relationship="Self.FK_PuntoCarga_ToMedidorConsumo" FromRole="MedidorConsumo" ToRole="PuntoCarga" />
+          <NavigationProperty Name="PuntoCarga1" Relationship="EstacionServicioModel.FK_PuntoCarga_ToMedidorConsumo1" FromRole="MedidorConsumo" ToRole="PuntoCarga" />
+        </EntityType>
+        <EntityType Name="MedidorTrafico">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Medidor" Relationship="Self.FK_MedidorTrafico_ToMedidor" FromRole="MedidorTrafico" ToRole="Medidor" />
+          <NavigationProperty Name="PuntoCarga" Relationship="Self.FK_PuntoCarga_ToMedidorTrafico" FromRole="MedidorTrafico" ToRole="PuntoCarga" />
+          <NavigationProperty Name="PuntoCarga1" Relationship="EstacionServicioModel.FK_PuntoCarga_ToMedidorTrafico1" FromRole="MedidorTrafico" ToRole="PuntoCarga" />
+        </EntityType>
+        <EntityType Name="PuntoCarga">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="capacidadMaxima" Type="Int32" />
+          <Property Name="fechaVencimiento" Type="DateTime" Precision="0" />
+          <Property Name="estacionServicio" Type="Int32" />
+          <Property Name="medCons" Type="Int32" />
+          <Property Name="medTraf" Type="Int32" />
+          <NavigationProperty Name="EstacionServicio1" Relationship="Self.FK_PuntoCarga_ToEstacionServicio" FromRole="PuntoCarga" ToRole="EstacionServicio" />
+          <Property Name="esDual" Type="Boolean" />
+          <NavigationProperty Name="MedidorConsumo" Relationship="EstacionServicioModel.FK_PuntoCarga_ToMedidorConsumo1" FromRole="PuntoCarga" ToRole="MedidorConsumo" />
+          <NavigationProperty Name="MedidorTrafico" Relationship="EstacionServicioModel.FK_PuntoCarga_ToMedidorTrafico1" FromRole="PuntoCarga" ToRole="MedidorTrafico" />
+        </EntityType>
+        <EntityType Name="Tarifa">
+          <Key>
+            <PropertyRef Name="codigo" />
+          </Key>
+          <Property Name="codigo" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="factorValle" Type="Int32" />
+          <Property Name="factorPunta" Type="Int32" />
+          <NavigationProperty Name="EstacionServicio" Relationship="Self.FK_EstacionServicio_ToTarifa" FromRole="Tarifa" ToRole="EstacionServicio" />
+        </EntityType>
+        <Association Name="FK_EstacionServicio_ToDireccion">
+          <End Role="Direccion" Type="Self.Direccion" Multiplicity="0..1" />
+          <End Role="EstacionServicio" Type="Self.EstacionServicio" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Direccion">
+              <PropertyRef Name="codPostal" />
+            </Principal>
+            <Dependent Role="EstacionServicio">
+              <PropertyRef Name="direccion" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EstacionServicio_ToTarifa">
+          <End Role="Tarifa" Type="Self.Tarifa" Multiplicity="0..1" />
+          <End Role="EstacionServicio" Type="Self.EstacionServicio" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tarifa">
+              <PropertyRef Name="codigo" />
+            </Principal>
+            <Dependent Role="EstacionServicio">
+              <PropertyRef Name="tarifa" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PuntoCarga_ToEstacionServicio">
+          <End Role="EstacionServicio" Type="Self.EstacionServicio" Multiplicity="0..1" />
+          <End Role="PuntoCarga" Type="Self.PuntoCarga" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EstacionServicio">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PuntoCarga">
+              <PropertyRef Name="estacionServicio" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Lectura_Medidor">
+          <End Role="Medidor" Type="Self.Medidor" Multiplicity="1" />
+          <End Role="Lectura" Type="Self.Lectura" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Medidor">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Lectura">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MedidorConsumo_To_Medidor">
+          <End Role="Medidor" Type="Self.Medidor" Multiplicity="1" />
+          <End Role="MedidorConsumo" Type="Self.MedidorConsumo" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Medidor">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="MedidorConsumo">
+              <PropertyRef Name="id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MedidorTrafico_ToMedidor">
+          <End Role="Medidor" Type="Self.Medidor" Multiplicity="1" />
+          <End Role="MedidorTrafico" Type="Self.MedidorTrafico" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Medidor">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="MedidorTrafico">
+              <PropertyRef Name="id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PuntoCarga_ToMedidorConsumo">
+          <End Role="MedidorConsumo" Type="Self.MedidorConsumo" Multiplicity="1" />
+          <End Role="PuntoCarga" Type="Self.PuntoCarga" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="MedidorConsumo">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PuntoCarga">
+              <PropertyRef Name="id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PuntoCarga_ToMedidorTrafico">
+          <End Role="MedidorTrafico" Type="Self.MedidorTrafico" Multiplicity="1" />
+          <End Role="PuntoCarga" Type="Self.PuntoCarga" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="MedidorTrafico">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PuntoCarga">
+              <PropertyRef Name="id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="BDEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Direccion" EntityType="Self.Direccion" />
+          <EntitySet Name="EstacionServicio" EntityType="Self.EstacionServicio" />
+          <EntitySet Name="Lectura" EntityType="Self.Lectura" />
+          <EntitySet Name="Medidor" EntityType="Self.Medidor" />
+          <EntitySet Name="MedidorConsumo" EntityType="Self.MedidorConsumo" />
+          <EntitySet Name="MedidorTrafico" EntityType="Self.MedidorTrafico" />
+          <EntitySet Name="PuntoCarga" EntityType="Self.PuntoCarga" />
+          <EntitySet Name="Tarifa" EntityType="Self.Tarifa" />
+          <AssociationSet Name="FK_EstacionServicio_ToDireccion" Association="Self.FK_EstacionServicio_ToDireccion">
+            <End Role="Direccion" EntitySet="Direccion" />
+            <End Role="EstacionServicio" EntitySet="EstacionServicio" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EstacionServicio_ToTarifa" Association="Self.FK_EstacionServicio_ToTarifa">
+            <End Role="Tarifa" EntitySet="Tarifa" />
+            <End Role="EstacionServicio" EntitySet="EstacionServicio" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PuntoCarga_ToEstacionServicio" Association="Self.FK_PuntoCarga_ToEstacionServicio">
+            <End Role="EstacionServicio" EntitySet="EstacionServicio" />
+            <End Role="PuntoCarga" EntitySet="PuntoCarga" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Lectura_Medidor" Association="Self.FK_Lectura_Medidor">
+            <End Role="Medidor" EntitySet="Medidor" />
+            <End Role="Lectura" EntitySet="Lectura" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MedidorConsumo_To_Medidor" Association="Self.FK_MedidorConsumo_To_Medidor">
+            <End Role="Medidor" EntitySet="Medidor" />
+            <End Role="MedidorConsumo" EntitySet="MedidorConsumo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MedidorTrafico_ToMedidor" Association="Self.FK_MedidorTrafico_ToMedidor">
+            <End Role="Medidor" EntitySet="Medidor" />
+            <End Role="MedidorTrafico" EntitySet="MedidorTrafico" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PuntoCarga_ToMedidorConsumo" Association="Self.FK_PuntoCarga_ToMedidorConsumo">
+            <End Role="MedidorConsumo" EntitySet="MedidorConsumo" />
+            <End Role="PuntoCarga" EntitySet="PuntoCarga" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PuntoCarga_ToMedidorTrafico" Association="Self.FK_PuntoCarga_ToMedidorTrafico">
+            <End Role="MedidorTrafico" EntitySet="MedidorTrafico" />
+            <End Role="PuntoCarga" EntitySet="PuntoCarga" />
+          </AssociationSet>
+          <EntitySet Name="Horario" EntityType="EstacionServicioModel.Horario" />
+          <AssociationSet Name="FK_Horario_ToEstacionServicio" Association="EstacionServicioModel.FK_Horario_ToEstacionServicio">
+            <End Role="EstacionServicio" EntitySet="EstacionServicio" />
+            <End Role="Horario" EntitySet="Horario" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PuntoCarga_ToMedidorConsumo1" Association="EstacionServicioModel.FK_PuntoCarga_ToMedidorConsumo1">
+            <End Role="MedidorConsumo" EntitySet="MedidorConsumo" />
+            <End Role="PuntoCarga" EntitySet="PuntoCarga" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PuntoCarga_ToMedidorTrafico1" Association="EstacionServicioModel.FK_PuntoCarga_ToMedidorTrafico1">
+            <End Role="MedidorTrafico" EntitySet="MedidorTrafico" />
+            <End Role="PuntoCarga" EntitySet="PuntoCarga" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Horario">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="Dia" />
+            <PropertyRef Name="Inicio" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Dia" Type="Int16" Nullable="false" />
+          <Property Name="Inicio" Type="Time" Precision="7" Nullable="false" />
+          <NavigationProperty Name="EstacionServicio" Relationship="EstacionServicioModel.FK_Horario_ToEstacionServicio" FromRole="Horario" ToRole="EstacionServicio" />
+          <Property Name="Duracion" Type="Time" Precision="7" />
+        </EntityType>
+        <Association Name="FK_Horario_ToEstacionServicio">
+          <End Type="EstacionServicioModel.EstacionServicio" Role="EstacionServicio" Multiplicity="1" />
+          <End Type="EstacionServicioModel.Horario" Role="Horario" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EstacionServicio">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Horario">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PuntoCarga_ToMedidorConsumo1">
+          <End Type="EstacionServicioModel.MedidorConsumo" Role="MedidorConsumo" Multiplicity="0..1" />
+          <End Type="EstacionServicioModel.PuntoCarga" Role="PuntoCarga" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MedidorConsumo">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PuntoCarga">
+              <PropertyRef Name="medCons" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PuntoCarga_ToMedidorTrafico1">
+          <End Type="EstacionServicioModel.MedidorTrafico" Role="MedidorTrafico" Multiplicity="0..1" />
+          <End Type="EstacionServicioModel.PuntoCarga" Role="PuntoCarga" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MedidorTrafico">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PuntoCarga">
+              <PropertyRef Name="medTraf" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="EstacionServicioModelStoreContainer" CdmEntityContainer="BDEntities">
+          <EntitySetMapping Name="Direccion">
+            <EntityTypeMapping TypeName="EstacionServicioModel.Direccion">
+              <MappingFragment StoreEntitySet="Direccion">
+                <ScalarProperty Name="codPostal" ColumnName="codPostal" />
+                <ScalarProperty Name="calle" ColumnName="calle" />
+                <ScalarProperty Name="nro" ColumnName="nro" />
+                <ScalarProperty Name="adicional" ColumnName="adicional" />
+                <ScalarProperty Name="comuna" ColumnName="comuna" />
+                <ScalarProperty Name="region" ColumnName="region" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EstacionServicio">
+            <EntityTypeMapping TypeName="EstacionServicioModel.EstacionServicio">
+              <MappingFragment StoreEntitySet="EstacionServicio">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="capacidadMaxima" ColumnName="capacidadMaxima" />
+                <ScalarProperty Name="tarifa" ColumnName="tarifa" />
+                <ScalarProperty Name="count" ColumnName="count" />
+                <ScalarProperty Name="direccion" ColumnName="direccion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Lectura">
+            <EntityTypeMapping TypeName="EstacionServicioModel.Lectura">
+              <MappingFragment StoreEntitySet="Lectura">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="fecha" ColumnName="fecha" />
+                <ScalarProperty Name="valor" ColumnName="valor" />
+                <ScalarProperty Name="tipo" ColumnName="tipo" />
+                <ScalarProperty Name="unidadMedida" ColumnName="unidadMedida" />
+                <ScalarProperty Name="estado" ColumnName="estado" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Medidor">
+            <EntityTypeMapping TypeName="EstacionServicioModel.Medidor">
+              <MappingFragment StoreEntitySet="Medidor">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="fechaInstalacion" ColumnName="fechaInstalacion" />
+                <ScalarProperty Name="tipo" ColumnName="tipo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MedidorConsumo">
+            <EntityTypeMapping TypeName="EstacionServicioModel.MedidorConsumo">
+              <MappingFragment StoreEntitySet="MedidorConsumo">
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MedidorTrafico">
+            <EntityTypeMapping TypeName="EstacionServicioModel.MedidorTrafico">
+              <MappingFragment StoreEntitySet="MedidorTrafico">
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PuntoCarga">
+            <EntityTypeMapping TypeName="EstacionServicioModel.PuntoCarga">
+              <MappingFragment StoreEntitySet="PuntoCarga">
+                <ScalarProperty Name="esDual" ColumnName="esDual" />
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="capacidadMaxima" ColumnName="capacidadMaxima" />
+                <ScalarProperty Name="fechaVencimiento" ColumnName="fechaVencimiento" />
+                <ScalarProperty Name="estacionServicio" ColumnName="estacionServicio" />
+                <ScalarProperty Name="medCons" ColumnName="medCons" />
+                <ScalarProperty Name="medTraf" ColumnName="medTraf" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tarifa">
+            <EntityTypeMapping TypeName="EstacionServicioModel.Tarifa">
+              <MappingFragment StoreEntitySet="Tarifa">
+                <ScalarProperty Name="codigo" ColumnName="codigo" />
+                <ScalarProperty Name="factorValle" ColumnName="factorValle" />
+                <ScalarProperty Name="factorPunta" ColumnName="factorPunta" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Horario">
+            <EntityTypeMapping TypeName="EstacionServicioModel.Horario">
+              <MappingFragment StoreEntitySet="Horario">
+                <ScalarProperty Name="Duracion" ColumnName="Duracion" />
+                <ScalarProperty Name="Inicio" ColumnName="Inicio" />
+                <ScalarProperty Name="Dia" ColumnName="Dia" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
